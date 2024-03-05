@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  mahasiswa
+  dosen
+  admin
+}
+
+model Akun {
+  username  String     @id @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  role      Role
+  mahasiswa Mahasiswa?
+  dosen     Dosen?
+}
+
+enum Kelamin {
+  L
+  P
+}
+
+model Mahasiswa {
+  nim          String     @id @db.Char(10)
+  nama         String     @db.VarChar(255)
+  email        String     @db.VarChar(255)
+  kelamin      Kelamin
+  akun         Akun       @relation(fields: [akunUsername], references: [username])
+  akunUsername String     @unique @db.VarChar(255)
+  presensi     Presensi[]
+  kelas        Kelas      @relation(fields: [kelasKode], references: [kode])
+  kelasKode    String
+}
+
+model Dosen {
+  nidn         String              @id @db.Char(10)
+  nama         String              @db.VarChar(255)
+  email        String              @db.VarChar(255)
+  kelamin      Kelamin
+  akun         Akun                @relation(fields: [akunUsername], references: [username])
+  akunUsername String              @unique @db.VarChar(255)
+  matakuliah   DosenOnMatakuliah[]
+}
+
+model Prodi {
+  kode  String  @id @db.VarChar(10)
+  nama  String  @db.VarChar(255)
+  kelas Kelas[]
+}
+
+model Kelas {
+  kode       String              @id @default(cuid())
+  nama       String
+  angkatan   Int
+  prodiKode  String              @db.VarChar(10)
+  prodi      Prodi               @relation(fields: [prodiKode], references: [kode])
+  mahasiswa  Mahasiswa[]
+  matakuliah KelasOnMatakuliah[]
+}
+
+model KelasOnMatakuliah {
+  id                Int        @id @default(autoincrement())
+  kelas             Kelas      @relation(fields: [kelasKode], references: [kode])
+  kelasKode         String
+  matakuliah        Matakuliah @relation(fields: [matakuliahKode], references: [kode])
+  tahunPembelajaran String     @db.VarChar(40)
+  semester          Int
+  matakuliahKode    String     @db.VarChar(12)
+}
+
+model Matakuliah {
+  kode  String              @id @db.VarChar(12)
+  nama  String
+  sks   Int
+  kelas KelasOnMatakuliah[]
+  dosen DosenOnMatakuliah[]
+}
+
+model DosenOnMatakuliah {
+  id             Int        @id @default(autoincrement())
+  dosen          Dosen      @relation(fields: [dosenNidn], references: [nidn])
+  dosenNidn      String     @db.Char(10)
+  matakuliah     Matakuliah @relation(fields: [matakuliahKode], references: [kode])
+  matakuliahKode String     @db.VarChar(12)
+}
+
+model Pertemuan {
+  id              Int        @id @default(autoincrement())
+  judulMateri     String     @db.VarChar(255)
+  deskripsiMateri String
+  timerAbsensi    Int
+  tanggal         DateTime
+  presensi        Presensi[]
+}
+
+enum JenisAbsensi {
+  sakit
+  izin
+  alpha
+}
+
+model Presensi {
+  id           Int           @id @default(autoincrement())
+  pertemuanId  Int
+  pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id])
+  mahasiswaNim String        @db.Char(10)
+  mahasiswa    Mahasiswa     @relation(fields: [mahasiswaNim], references: [nim])
+  jam          Int
+  jenis        JenisAbsensi?
+  keterangan   String?
+}
