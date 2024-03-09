@@ -8,4 +8,4 @@ import { AkunController } from './akun.controller';
   providers: [AkunService, PrismaService, JwtService],
   controllers: [AkunController],
 })
-export class UserModule {}
+export class AkunModule {}

@@ -1,9 +1,9 @@
 import { IsEmail, IsString, Length, IsEnum, IsOptional } from 'class-validator';
 import { Kelamin } from '@prisma/client';
-export class MahasiswaDto {
+export class DosenDto {
   @Length(10)
   @IsString({ message: 'Nim tidak valid' })
-  nim: string;
+  nidn: string;
   @IsString({ message: 'Nama tidak valid' })
   nama: string;
   @IsEmail({}, { message: 'Email tidak valid' })
@@ -15,7 +15,4 @@ export class MahasiswaDto {
   @IsOptional()
   @IsString({ message: 'Mahasiswa harus memiliki username' })
   akunUsername: string;
-
-  @IsString({ message: 'Kelas harus ada' })
-  kelasKode: string;
 }

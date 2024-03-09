@@ -37,21 +37,21 @@ model Mahasiswa {
   nama         String     @db.VarChar(255)
   email        String     @db.VarChar(255)
   kelamin      Kelamin
-  akun         Akun       @relation(fields: [akunUsername], references: [username])
-  akunUsername String     @unique @db.VarChar(255)
+  akun         Akun?      @relation(fields: [akunUsername], references: [username])
+  akunUsername String?    @unique @db.VarChar(255)
   presensi     Presensi[]
   kelas        Kelas      @relation(fields: [kelasKode], references: [kode])
-  kelasKode    String
+  kelasKode    String     @db.Char(30)
 }
 
 model Dosen {
-  nidn         String              @id @db.Char(10)
-  nama         String              @db.VarChar(255)
-  email        String              @db.VarChar(255)
-  kelamin      Kelamin
-  akun         Akun                @relation(fields: [akunUsername], references: [username])
-  akunUsername String              @unique @db.VarChar(255)
-  matakuliah   DosenOnMatakuliah[]
+  nidn            String              @id @db.Char(10)
+  nama            String              @db.VarChar(255)
+  email           String              @db.VarChar(255)
+  kelamin         Kelamin
+  akun            Akun?               @relation(fields: [akunUsername], references: [username])
+  akunUsername    String?             @unique @db.VarChar(255)
+  dosenMatakuliah DosenOnMatakuliah[]
 }
 
 model Prodi {
@@ -61,31 +61,33 @@ model Prodi {
 }
 
 model Kelas {
-  kode       String              @id @default(cuid())
-  nama       String
-  angkatan   Int
-  prodiKode  String              @db.VarChar(10)
-  prodi      Prodi               @relation(fields: [prodiKode], references: [kode])
-  mahasiswa  Mahasiswa[]
-  matakuliah KelasOnMatakuliah[]
+  kode            String              @id @default(cuid()) @db.Char(30)
+  nama            String
+  angkatan        Int
+  prodiKode       String              @db.VarChar(10)
+  prodi           Prodi               @relation(fields: [prodiKode], references: [kode])
+  mahasiswa       Mahasiswa[]
+  kelasMatakuliah KelasOnMatakuliah[]
 }
 
 model KelasOnMatakuliah {
-  id                Int        @id @default(autoincrement())
-  kelas             Kelas      @relation(fields: [kelasKode], references: [kode])
-  kelasKode         String
-  matakuliah        Matakuliah @relation(fields: [matakuliahKode], references: [kode])
-  tahunPembelajaran String     @db.VarChar(40)
+  id                Int         @id @default(autoincrement())
+  kelas             Kelas       @relation(fields: [kelasKode], references: [kode])
+  kelasKode         String      @db.Char(30)
+  matakuliah        Matakuliah  @relation(fields: [matakuliahKode], references: [kode])
+  tahunPembelajaran String      @db.VarChar(40)
   semester          Int
-  matakuliahKode    String     @db.VarChar(12)
+  totalJam          Int
+  pertemuan         Pertemuan[]
+  matakuliahKode    String      @db.VarChar(12)
 }
 
 model Matakuliah {
-  kode  String              @id @db.VarChar(12)
-  nama  String
-  sks   Int
-  kelas KelasOnMatakuliah[]
-  dosen DosenOnMatakuliah[]
+  kode            String              @id @db.VarChar(12)
+  nama            String
+  sks             Int
+  kelasMatakuliah KelasOnMatakuliah[]
+  dosenMatakuliah DosenOnMatakuliah[]
 }
 
 model DosenOnMatakuliah {
@@ -94,30 +96,34 @@ model DosenOnMatakuliah {
   dosenNidn      String     @db.Char(10)
   matakuliah     Matakuliah @relation(fields: [matakuliahKode], references: [kode])
   matakuliahKode String     @db.VarChar(12)
+  totalJam       Int
 }
 
 model Pertemuan {
-  id              Int        @id @default(autoincrement())
-  judulMateri     String     @db.VarChar(255)
-  deskripsiMateri String
-  timerAbsensi    Int
-  tanggal         DateTime
-  presensi        Presensi[]
+  id                  Int               @id @default(autoincrement())
+  judulMateri         String            @db.VarChar(255)
+  deskripsiMateri     String
+  timerAbsensi        Int
+  tanggal             DateTime
+  presensi            Presensi[]
+  kelasMatakuliah     KelasOnMatakuliah @relation(fields: [kelasMatakuliahKode], references: [id])
+  kelasMatakuliahKode Int
 }
 
 enum JenisAbsensi {
   sakit
   izin
   alpha
+  masuk
 }
 
 model Presensi {
   id           Int           @id @default(autoincrement())
+  indexJam     Int            //urutan jam dari presensi
   pertemuanId  Int
   pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id])
   mahasiswaNim String        @db.Char(10)
   mahasiswa    Mahasiswa     @relation(fields: [mahasiswaNim], references: [nim])
-  jam          Int
   jenis        JenisAbsensi?
   keterangan   String?
 }
