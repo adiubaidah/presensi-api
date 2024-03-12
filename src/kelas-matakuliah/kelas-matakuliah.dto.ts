@@ -8,6 +8,9 @@ export class KelasMatakuliahDto {
   @IsString({ message: 'Tahun pembelajaran harus ada' })
   tahunPembelajaran: string;
 
+  @IsNumber({}, { message: 'Total jam harus ada' })
+  totalJam: number;
+
   @IsNumber({}, { message: 'Semester harus ada' })
   semester: number;
 }

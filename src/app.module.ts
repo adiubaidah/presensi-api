@@ -9,8 +9,6 @@ import { AuthModule } from './auth/auth.module';
 import { KelasModule } from './kelas/kelas.module';
 import { AkunModule } from './akun/akun.module';
 import { MatakuliahModule } from './matakuliah/matakuliah.module';
-import { PertemuanService } from './pertemuan/pertemuan.service';
-import { PertemuanController } from './pertemuan/pertemuan.controller';
 import { DosenMatakuliahModule } from './dosen-matakuliah/dosen-matakuliah.module';
 import { KelasMatakuliahModule } from './kelas-matakuliah/kelas-matakuliah.module';
 import { PertemuanModule } from './pertemuan/pertemuan.module';
@@ -29,7 +27,7 @@ import { PertemuanModule } from './pertemuan/pertemuan.module';
     KelasMatakuliahModule,
     PertemuanModule,
   ],
-  controllers: [AppController, PertemuanController],
-  providers: [AppService, PertemuanService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

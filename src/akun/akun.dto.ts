@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsNumberString,
   IsOptional,
@@ -13,6 +14,10 @@ export class AkunDto {
 
   @IsString({ message: 'Password harus ada' })
   password: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive: boolean;
 
   @IsOptional()
   @IsEnum(Role)

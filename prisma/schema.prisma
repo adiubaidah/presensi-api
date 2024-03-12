@@ -22,6 +22,7 @@ enum Role {
 model Akun {
   username  String     @id @unique @db.VarChar(255)
   password  String     @db.VarChar(255)
+  isActive  Boolean    @default(true)
   role      Role
   mahasiswa Mahasiswa?
   dosen     Dosen?
@@ -119,7 +120,7 @@ enum JenisAbsensi {
 
 model Presensi {
   id           Int           @id @default(autoincrement())
-  indexJam     Int            //urutan jam dari presensi
+  indexJam     Int //urutan jam dari presensi
   pertemuanId  Int
   pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id])
   mahasiswaNim String        @db.Char(10)

@@ -1,4 +1,13 @@
-import { Controller, Post, Get, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  UseGuards,
+  Body,
+  Delete,
+  Put,
+  Param,
+} from '@nestjs/common';
 import { ProdiService } from './prodi.service';
 import { Role } from 'src/role/role.decorator';
 import { Role as RoleEnum } from '@prisma/client';
@@ -22,5 +31,19 @@ export class ProdiController {
   @Get()
   async all() {
     return await this.prodiService.all();
+  }
+
+  @Role([RoleEnum.admin])
+  @UseGuards(JwtGuard, RoleGuard)
+  @Put(':kode')
+  async update(@Param('kode') kode: string, @Body() payload: ProdiDto) {
+    return await this.prodiService.update(kode, payload);
+  }
+
+  @Role([RoleEnum.admin])
+  @UseGuards(JwtGuard, RoleGuard)
+  @Delete(':kode')
+  async delete(@Param('kode') kode: string) {
+    return await this.prodiService.delete(kode);
   }
 }

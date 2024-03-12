@@ -10,6 +10,7 @@ import {
   Query,
   InternalServerErrorException,
 } from '@nestjs/common';
+import _ from 'underscore';
 // import { Role as RoleEnum } from 'constants';
 import { Role as RoleEnum } from '@prisma/client';
 // import { Role as RoleEnum } from 'src/constant';
@@ -31,15 +32,22 @@ export class AkunController {
     @Query('mahasiswa') mahasiswa: boolean,
   ) {
     try {
-      const results = await Promise.all([
-        dosen ? this.akunService.dosen() : undefined,
-        mahasiswa ? this.akunService.mahasiswa() : undefined,
-      ]);
+      const results = [];
 
-      return {
-        dosen: results[0] || [],
-        mahasiswa: results[1] || [],
-      };
+      // results.push(await this.akunService.)
+      if (dosen) {
+        results.push(await this.akunService.dosen());
+      }
+
+      if (mahasiswa) {
+        results.push(await this.akunService.mahasiswa());
+      }
+
+      if (!dosen && !mahasiswa) {
+        results.push(await this.akunService.allAkun());
+      }
+
+      return _.shuffle(_.flatten(results));
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

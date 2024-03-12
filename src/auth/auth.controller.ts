@@ -60,7 +60,7 @@ export class AuthController {
         publicKey: process.env.JWT_SECRET_KEY,
       });
       // console.log(user);
-      return user;
+      return { isAuth: true, ...user };
     }
     throw new UnauthorizedException('Belum login');
   }

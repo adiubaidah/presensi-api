@@ -13,4 +13,19 @@ export class ProdiService {
   async all() {
     return await this.prisma.prodi.findMany();
   }
+
+  async update(kode: string, payload: ProdiDto) {
+    return await this.prisma.prodi.update({
+      where: {
+        kode,
+      },
+      data: {
+        ...payload,
+      },
+    });
+  }
+
+  async delete(kode: string) {
+    return await this.prisma.prodi.delete({ where: { kode } });
+  }
 }

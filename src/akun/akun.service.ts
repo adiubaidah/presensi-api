@@ -20,6 +20,7 @@ export class AkunService {
 
     const newAkun = await this.prisma.akun.create({
       data: {
+        isActive: true,
         username,
         password: await hash(payload.password, 10),
         role,
@@ -31,8 +32,8 @@ export class AkunService {
   }
 
   async allAkun() {
-    const Akuns = await this.prisma.akun.findMany();
-    return Akuns;
+    const akun = await this.prisma.akun.findMany();
+    return akun;
   }
 
   async dosen() {
