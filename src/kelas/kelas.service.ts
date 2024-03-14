@@ -34,6 +34,18 @@ export class KelasService {
     });
   }
 
+  async find(kode: string) {
+    return await this.prisma.kelas.findUnique({
+      where: {
+        kode,
+      },
+      include: {
+        mahasiswa: true,
+        prodi: true,
+      },
+    });
+  }
+
   async update(kode: string, payload: KelasDto) {
     return await this.prisma.kelas.update({
       where: {

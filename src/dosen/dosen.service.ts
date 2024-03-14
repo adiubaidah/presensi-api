@@ -21,13 +21,10 @@ export class DosenService {
       }
     }
 
-    const akunData = akunUsername
-      ? { connect: { username: akunUsername } }
-      : {};
     return await this.prisma.dosen.create({
       data: {
         ...restPayload,
-        ...akunData,
+        akun: akunUsername ? { connect: { username: akunUsername } } : {},
       },
     });
   }
@@ -53,9 +50,6 @@ export class DosenService {
         throw new BadRequestException('Akun haruslah dosen');
       }
     }
-    const akunData = akunUsername
-      ? { connect: { username: akunUsername } }
-      : {};
     return await this.prisma.dosen.update({
       where: {
         nidn,
@@ -63,7 +57,7 @@ export class DosenService {
       data: {
         ...restPayload,
         // ...akunData,
-        akun: { ...akunData },
+        akun: akunUsername ? { connect: { username: akunUsername } } : {},
       },
     });
   }

@@ -41,18 +41,18 @@ model Mahasiswa {
   akun         Akun?      @relation(fields: [akunUsername], references: [username])
   akunUsername String?    @unique @db.VarChar(255)
   presensi     Presensi[]
-  kelas        Kelas      @relation(fields: [kelasKode], references: [kode])
-  kelasKode    String     @db.Char(30)
+  kelas        Kelas?     @relation(fields: [kelasKode], references: [kode])
+  kelasKode    String?    @db.VarChar(30)
 }
 
 model Dosen {
-  nidn            String              @id @db.Char(10)
-  nama            String              @db.VarChar(255)
-  email           String              @db.VarChar(255)
-  kelamin         Kelamin
-  akun            Akun?               @relation(fields: [akunUsername], references: [username])
-  akunUsername    String?             @unique @db.VarChar(255)
-  dosenMatakuliah DosenOnMatakuliah[]
+  nidn         String         @id @db.Char(10)
+  nama         String         @db.VarChar(255)
+  email        String         @db.VarChar(255)
+  kelamin      Kelamin
+  akun         Akun?          @relation(fields: [akunUsername], references: [username])
+  akunUsername String?        @unique @db.VarChar(255)
+  pembelajaran Pembelajaran[]
 }
 
 model Prodi {
@@ -62,53 +62,46 @@ model Prodi {
 }
 
 model Kelas {
-  kode            String              @id @default(cuid()) @db.Char(30)
-  nama            String
-  angkatan        Int
-  prodiKode       String              @db.VarChar(10)
-  prodi           Prodi               @relation(fields: [prodiKode], references: [kode])
-  mahasiswa       Mahasiswa[]
-  kelasMatakuliah KelasOnMatakuliah[]
+  kode         String         @id @default(cuid()) @db.VarChar(30)
+  nama         String
+  angkatan     Int
+  prodiKode    String         @db.VarChar(10)
+  prodi        Prodi          @relation(fields: [prodiKode], references: [kode])
+  mahasiswa    Mahasiswa[]
+  pembelajaran Pembelajaran[]
 }
 
-model KelasOnMatakuliah {
+model Pembelajaran {
   id                Int         @id @default(autoincrement())
   kelas             Kelas       @relation(fields: [kelasKode], references: [kode])
-  kelasKode         String      @db.Char(30)
+  kelasKode         String      @db.VarChar(30)
   matakuliah        Matakuliah  @relation(fields: [matakuliahKode], references: [kode])
   tahunPembelajaran String      @db.VarChar(40)
   semester          Int
   totalJam          Int
+  sks               Int
   pertemuan         Pertemuan[]
   matakuliahKode    String      @db.VarChar(12)
+  dosen             Dosen       @relation(fields: [dosenNidn], references: [nidn])
+  dosenNidn         String      @db.Char(10)
 }
 
 model Matakuliah {
-  kode            String              @id @db.VarChar(12)
-  nama            String
-  sks             Int
-  kelasMatakuliah KelasOnMatakuliah[]
-  dosenMatakuliah DosenOnMatakuliah[]
-}
-
-model DosenOnMatakuliah {
-  id             Int        @id @default(autoincrement())
-  dosen          Dosen      @relation(fields: [dosenNidn], references: [nidn])
-  dosenNidn      String     @db.Char(10)
-  matakuliah     Matakuliah @relation(fields: [matakuliahKode], references: [kode])
-  matakuliahKode String     @db.VarChar(12)
-  totalJam       Int
+  kode         String         @id @db.VarChar(12)
+  nama         String
+  pembelajaran Pembelajaran[]
 }
 
 model Pertemuan {
-  id                  Int               @id @default(autoincrement())
-  judulMateri         String            @db.VarChar(255)
-  deskripsiMateri     String
-  timerAbsensi        Int
-  tanggal             DateTime
-  presensi            Presensi[]
-  kelasMatakuliah     KelasOnMatakuliah @relation(fields: [kelasMatakuliahKode], references: [id])
-  kelasMatakuliahKode Int
+  id              Int          @id @default(autoincrement())
+  pertemuanKe     Int          @db.SmallInt
+  judulMateri     String       @db.VarChar(255)
+  deskripsiMateri String
+  timerAbsensi    Int
+  tanggal         DateTime
+  presensi        Presensi[]
+  pembelajaran    Pembelajaran @relation(fields: [pembelajaranId], references: [id])
+  pembelajaranId  Int
 }
 
 enum JenisAbsensi {

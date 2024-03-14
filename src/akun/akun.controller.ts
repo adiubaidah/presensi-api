@@ -18,7 +18,7 @@ import { Role } from 'src/role/role.decorator';
 import { RoleGuard } from 'src/role/role.guard';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { AkunService } from './akun.service';
-import { AkunDto } from './akun.dto';
+import { AkunDto, AkunDtoEdit } from './akun.dto';
 
 @Controller('akun')
 @Role([RoleEnum.admin])
@@ -61,9 +61,9 @@ export class AkunController {
   @Put(':username')
   async update(
     @Param('username') username: string,
-    @Query('role') role: RoleEnum,
+    @Body() payload: AkunDtoEdit,
   ) {
-    return await this.akunService.changeRole(username, role);
+    return await this.akunService.update(username, payload);
   }
 
   @Delete(':username')

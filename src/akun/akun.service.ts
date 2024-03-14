@@ -1,8 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import { PrismaService } from 'src/prisma.service';
-import { AkunDto } from 'src/akun/akun.dto';
-import { Role } from '@prisma/client';
+import { AkunDto, AkunDtoEdit } from 'src/akun/akun.dto';
 @Injectable()
 export class AkunService {
   constructor(private prisma: PrismaService) {}
@@ -54,15 +53,32 @@ export class AkunService {
     return dosen;
   }
 
-  async changeRole(username: string, role: Role) {
-    return await this.prisma.akun.update({
+  async update(findUsername: string, payload: AkunDtoEdit) {
+    const { username, role } = payload;
+
+    const existingAkun = await this.prisma.akun.findUnique({
       where: {
         username,
       },
+    });
+    if (existingAkun) throw new ConflictException('username telah terpakai');
+
+    const editedAkun = await this.prisma.akun.update({
+      where: {
+        username: findUsername,
+      },
       data: {
+        isActive: true,
+        username,
+        password: payload.password
+          ? await hash(payload.password, 10)
+          : undefined,
         role,
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...restEditedAkun } = editedAkun;
+    return { restEditedAkun };
   }
 
   async findByUsername(username: string) {

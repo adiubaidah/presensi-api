@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { KelasMatakuliahController } from './kelas-matakuliah.controller';
+import { KelasMatakuliahController } from './pembelajaran.controller';
 
 describe('KelasMatakuliahController', () => {
   let controller: KelasMatakuliahController;

@@ -35,6 +35,13 @@ export class MahasiswaController {
 
   @Role([RoleEnum.admin])
   @UseGuards(JwtGuard, RoleGuard)
+  @Get(':nim')
+  async find(@Param('nim') nim: string) {
+    return await this.mahasiswaService.find(nim);
+  }
+
+  @Role([RoleEnum.admin])
+  @UseGuards(JwtGuard, RoleGuard)
   @Put(':nim')
   async update(@Param('nim') nim: string, @Body() payload: MahasiswaDto) {
     return await this.mahasiswaService.update(nim, payload);

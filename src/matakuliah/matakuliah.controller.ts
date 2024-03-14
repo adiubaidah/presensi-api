@@ -32,7 +32,7 @@ export class MatakuliahController {
   }
 
   @Put(':kode')
-  async update(@Param('kode') kode: string, payload: MatakuliahDto) {
+  async update(@Param('kode') kode: string, @Body() payload: MatakuliahDto) {
     return await this.matakuliahService.update(kode, payload);
   }
 

@@ -16,6 +16,7 @@ export class MahasiswaDto {
   @IsString({ message: 'Mahasiswa harus memiliki username' })
   akunUsername: string;
 
+  @IsOptional()
   @IsString({ message: 'Kelas harus ada' })
   kelasKode: string;
 }

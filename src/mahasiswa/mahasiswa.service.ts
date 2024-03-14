@@ -20,19 +20,24 @@ export class MahasiswaService {
         throw new BadRequestException('Akun harus mahasiswa');
       }
     }
-    const akunData = akunUsername
-      ? { connect: { username: akunUsername } }
-      : {};
-
     return await this.prisma.mahasiswa.create({
       data: {
         ...restPayload,
-        kelas: {
-          connect: {
-            kode: kelasKode,
-          },
-        },
-        ...akunData,
+        // ...kelasData,
+        kelas: kelasKode
+          ? {
+              connect: {
+                kode: kelasKode,
+              },
+            }
+          : {},
+        akun: akunUsername
+          ? {
+              connect: {
+                username: akunUsername,
+              },
+            }
+          : {},
       },
     });
   }
@@ -40,7 +45,34 @@ export class MahasiswaService {
   async all() {
     return await this.prisma.mahasiswa.findMany({
       include: {
-        kelas: true,
+        kelas: {
+          include: {
+            prodi: true,
+          },
+        },
+      },
+    });
+  }
+
+  async find(nim: string) {
+    return await this.prisma.mahasiswa.findUnique({
+      where: {
+        nim,
+      },
+      include: {
+        kelas: {
+          include: {
+            prodi: true,
+          },
+        },
+      },
+    });
+  }
+
+  async mahasiswaWithNoKelas() {
+    return await this.prisma.mahasiswa.findMany({
+      where: {
+        kelas: null,
       },
     });
   }
@@ -59,21 +91,26 @@ export class MahasiswaService {
       }
     }
 
-    const akunData = akunUsername
-      ? { connect: { username: akunUsername } }
-      : {};
     return await this.prisma.mahasiswa.update({
       where: {
         nim,
       },
       data: {
         ...restPayload,
-        kelas: {
-          connect: {
-            kode: kelasKode,
-          },
-        },
-        akun: { ...akunData },
+        kelas: kelasKode
+          ? {
+              connect: {
+                kode: kelasKode,
+              },
+            }
+          : {},
+        akun: akunUsername
+          ? {
+              connect: {
+                username: akunUsername,
+              },
+            }
+          : {},
       },
     });
   }

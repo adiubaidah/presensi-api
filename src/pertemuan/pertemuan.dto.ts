@@ -1,6 +1,9 @@
 import { Transform } from 'class-transformer';
 import { IsString, IsNumber, IsDate } from 'class-validator';
 export class PertemuanDto {
+  @IsNumber({}, { message: 'No pertemuan tidak valid' })
+  pertemuanKe: number;
+
   @IsString({ message: 'Judul Materi harus ada' })
   judulMateri: string;
   @IsString({ message: 'Deskripsi Materi harus ada' })
@@ -14,5 +17,5 @@ export class PertemuanDto {
   tanggal: Date;
 
   @IsNumber({}, { message: 'Kelas dibutuhkan' })
-  kelasMatakuliahKode: number;
+  pembelajaranId: number;
 }

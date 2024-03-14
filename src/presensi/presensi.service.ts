@@ -17,14 +17,14 @@ export class PresensiService {
           id: pertemuanId,
         },
         include: {
-          kelasMatakuliah: {
+          pembelajaran: {
             select: {
               totalJam: true,
             },
           },
         },
       })
-      .then((data) => data.kelasMatakuliah.totalJam);
+      .then((data) => data.pembelajaran.totalJam);
 
     let presensiMasukKelas: NewPresensi[];
 

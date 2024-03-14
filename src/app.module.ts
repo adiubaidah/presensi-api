@@ -9,8 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { KelasModule } from './kelas/kelas.module';
 import { AkunModule } from './akun/akun.module';
 import { MatakuliahModule } from './matakuliah/matakuliah.module';
-import { DosenMatakuliahModule } from './dosen-matakuliah/dosen-matakuliah.module';
-import { KelasMatakuliahModule } from './kelas-matakuliah/kelas-matakuliah.module';
+import { PembelajaranModule } from './pembelajaran/pembelajaran.module';
 import { PertemuanModule } from './pertemuan/pertemuan.module';
 
 @Module({
@@ -23,8 +22,7 @@ import { PertemuanModule } from './pertemuan/pertemuan.module';
     KelasModule,
     MatakuliahModule,
     AkunModule,
-    DosenMatakuliahModule,
-    KelasMatakuliahModule,
+    PembelajaranModule,
     PertemuanModule,
   ],
   controllers: [AppController],

@@ -7,13 +7,13 @@ export class PertemuanService {
   constructor(private prisma: PrismaService) {}
 
   async create(payload: PertemuanDto) {
-    const { kelasMatakuliahKode, ...restPayload } = payload;
+    const { pembelajaranId, ...restPayload } = payload;
     return await this.prisma.pertemuan.create({
       data: {
         ...restPayload,
-        kelasMatakuliah: {
+        pembelajaran: {
           connect: {
-            id: kelasMatakuliahKode,
+            id: pembelajaranId,
           },
         },
       },
