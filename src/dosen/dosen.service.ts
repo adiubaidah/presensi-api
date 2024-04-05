@@ -37,6 +37,14 @@ export class DosenService {
     });
   }
 
+  async find(nidn: string) {
+    return await this.prisma.dosen.findUnique({
+      where: {
+        nidn,
+      },
+    });
+  }
+
   async update(nidn: string, payload: DosenDto) {
     const { akunUsername, ...restPayload } = payload;
     if (akunUsername) {

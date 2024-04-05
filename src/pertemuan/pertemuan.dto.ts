@@ -10,12 +10,12 @@ export class PertemuanDto {
   deskripsiMateri: string;
 
   @IsNumber({}, { message: 'Timer absensi harus ada' })
-  timerAbsensi: number;
+  timerPresensi: number;
 
   @Transform(({ value }) => new Date(value))
   @IsDate({ message: 'Tanggal pertemuan tidak valid' })
   tanggal: Date;
 
-  @IsNumber({}, { message: 'Kelas dibutuhkan' })
+  @IsNumber({}, { message: 'Pembelajaran dibutuhkan' })
   pembelajaranId: number;
 }

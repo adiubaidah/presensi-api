@@ -40,4 +40,38 @@ export class PembelajaranService {
       },
     });
   }
+
+  async findByMatakuliahKelas(matakuliah: string, kelas: string) {
+    return await this.prisma.pembelajaran.findFirst({
+      where: {
+        matakuliahKode: matakuliah,
+        AND: {
+          kelasKode: kelas,
+        },
+      },
+      include: {
+        matakuliah: true,
+      },
+    });
+  }
+
+  async find(id: number) {
+    return await this.prisma.pembelajaran.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        matakuliah: true,
+        kelas: true,
+      },
+    });
+  }
+
+  async delete(id: number) {
+    return await this.prisma.pembelajaran.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

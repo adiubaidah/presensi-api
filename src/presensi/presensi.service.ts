@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Presensi } from '@prisma/client';
+import { $Enums, Presensi } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 
 type NewPresensi = Omit<Presensi, 'id' | 'keterangan'>;
@@ -8,7 +8,11 @@ type NewPresensi = Omit<Presensi, 'id' | 'keterangan'>;
 export class PresensiService {
   constructor(private prisma: PrismaService) {}
 
-  async create(mahasiswaNim: string, pertemuanId: number) {
+  async create(
+    pertemuanId: number,
+    mahasiswaNim: string,
+    jenis: $Enums.JenisAbsensi,
+  ) {
     //ambil total jam dari matakuliah
 
     const totalJamMatkul = await this.prisma.pertemuan
@@ -26,12 +30,12 @@ export class PresensiService {
       })
       .then((data) => data.pembelajaran.totalJam);
 
-    let presensiMasukKelas: NewPresensi[];
+    const presensiMasukKelas: NewPresensi[] = [];
 
     for (let i = 1; i <= totalJamMatkul; i++) {
       presensiMasukKelas.push({
-        indexJam: i,
-        jenis: 'masuk',
+        jameKe: i,
+        jenis,
         mahasiswaNim,
         pertemuanId,
       });

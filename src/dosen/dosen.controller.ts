@@ -35,6 +35,13 @@ export class DosenController {
 
   @Role([RoleEnum.admin])
   @UseGuards(JwtGuard, RoleGuard)
+  @Get(':nidn')
+  async find(@Param('nidn') nidn: string) {
+    return await this.dosenService.find(nidn);
+  }
+
+  @Role([RoleEnum.admin])
+  @UseGuards(JwtGuard, RoleGuard)
   @Put(':nidn')
   async update(@Param('nidn') nidn: string, @Body() payload: DosenDto) {
     return await this.dosenService.update(nidn, payload);

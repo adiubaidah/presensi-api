@@ -97,7 +97,9 @@ model Pertemuan {
   pertemuanKe     Int          @db.SmallInt
   judulMateri     String       @db.VarChar(255)
   deskripsiMateri String
-  timerAbsensi    Int
+  statusTimer     Timer        @default(belum_dimulai)
+  timerPresensi   Int
+  waktuMulai      DateTime?
   tanggal         DateTime
   presensi        Presensi[]
   pembelajaran    Pembelajaran @relation(fields: [pembelajaranId], references: [id])
@@ -111,9 +113,15 @@ enum JenisAbsensi {
   masuk
 }
 
+enum Timer {
+  belum_dimulai
+  berjalan
+  selesai
+}
+
 model Presensi {
   id           Int           @id @default(autoincrement())
-  indexJam     Int //urutan jam dari presensi
+  jameKe       Int //urutan jam dari presensi
   pertemuanId  Int
   pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id])
   mahasiswaNim String        @db.Char(10)

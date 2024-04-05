@@ -7,6 +7,7 @@ import {
   Param,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Role } from 'src/role/role.decorator';
 import { Role as RoleEnum } from '@prisma/client';
@@ -14,6 +15,13 @@ import { MahasiswaService } from './mahasiswa.service';
 import { MahasiswaDto } from './mahasiswa.dto';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { RoleGuard } from 'src/role/role.guard';
+
+export type MahasiswaQuery = {
+  nama?: string;
+  kelasKode?: string;
+  email?: string;
+  noClass?: boolean;
+};
 
 @Controller('mahasiswa')
 export class MahasiswaController {
@@ -29,8 +37,8 @@ export class MahasiswaController {
   @Role([RoleEnum.admin])
   @UseGuards(JwtGuard, RoleGuard)
   @Get()
-  async all() {
-    return await this.mahasiswaService.all();
+  async all(@Query() query: MahasiswaQuery) {
+    return await this.mahasiswaService.all(query);
   }
 
   @Role([RoleEnum.admin])

@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { MahasiswaDto } from './mahasiswa.dto';
+import { MahasiswaQuery } from './mahasiswa.controller';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MahasiswaService {
@@ -42,14 +44,48 @@ export class MahasiswaService {
     });
   }
 
-  async all() {
+  async all(query: MahasiswaQuery) {
+    const where = {};
+    let orderBy: any[] = [{ nim: Prisma.SortOrder.asc }];
+
+    if (query.nama) {
+      where['nama'] = {
+        contains: query.nama,
+        mode: 'insensitive',
+      };
+    }
+    if (query.email) {
+      where['email'] = {
+        equals: query.email,
+      };
+    }
+    if (query.kelasKode) {
+      orderBy = [{ nama: Prisma.SortOrder.asc }];
+      where['kelasKode'] = {
+        contains: query.kelasKode,
+        mode: 'insensitive',
+      };
+    }
+    if (query.noClass) {
+      where['kelas'] = null;
+    }
     return await this.prisma.mahasiswa.findMany({
+      where,
+      orderBy,
       include: {
         kelas: {
           include: {
             prodi: true,
           },
         },
+      },
+    });
+  }
+
+  async findByKelas(kelasKode: string) {
+    return await this.prisma.mahasiswa.findMany({
+      where: {
+        kelasKode,
       },
     });
   }

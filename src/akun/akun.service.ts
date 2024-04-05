@@ -2,6 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import { PrismaService } from 'src/prisma.service';
 import { AkunDto, AkunDtoEdit } from 'src/akun/akun.dto';
+
 @Injectable()
 export class AkunService {
   constructor(private prisma: PrismaService) {}
@@ -35,22 +36,20 @@ export class AkunService {
     return akun;
   }
 
-  async dosen() {
-    const dosen = await this.prisma.akun.findMany({
-      where: {
-        role: 'dosen',
-      },
-    });
-    return dosen;
-  }
-
   async mahasiswa() {
-    const dosen = await this.prisma.akun.findMany({
+    return await this.prisma.akun.findMany({
       where: {
         role: 'mahasiswa',
       },
     });
-    return dosen;
+  }
+
+  async dosen() {
+    return await this.prisma.akun.findMany({
+      where: {
+        role: 'dosen',
+      },
+    });
   }
 
   async update(findUsername: string, payload: AkunDtoEdit) {

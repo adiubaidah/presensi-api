@@ -9,3 +9,8 @@ export class KelasDto {
   @IsString({ message: 'Prodi harus ada' })
   prodiKode: string;
 }
+
+export class AnggotaKelasDto {
+  @IsString({ message: 'Mahasiswa harus ada' })
+  nim: string;
+}

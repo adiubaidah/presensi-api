@@ -8,7 +8,6 @@ import {
   Body,
   Param,
   Query,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import _ from 'underscore';
 // import { Role as RoleEnum } from 'constants';
@@ -27,30 +26,17 @@ export class AkunController {
   constructor(private akunService: AkunService) {}
 
   @Get()
-  async all(
-    @Query('dosen') dosen: boolean,
-    @Query('mahasiswa') mahasiswa: boolean,
-  ) {
-    try {
-      const results = [];
+  async all() {
+    return await this.akunService.allAkun();
+  }
 
-      // results.push(await this.akunService.)
-      if (dosen) {
-        results.push(await this.akunService.dosen());
-      }
-
-      if (mahasiswa) {
-        results.push(await this.akunService.mahasiswa());
-      }
-
-      if (!dosen && !mahasiswa) {
-        results.push(await this.akunService.allAkun());
-      }
-
-      return _.shuffle(_.flatten(results));
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+  @Get('mahasiswa')
+  async mahasiswa() {
+    return await this.akunService.mahasiswa();
+  }
+  @Get('dosen')
+  async dosen() {
+    return await this.akunService.dosen();
   }
 
   @Post()

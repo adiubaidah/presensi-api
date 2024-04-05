@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 
-import { KelasDto } from './kelas.dto';
+import { AnggotaKelasDto, KelasDto } from './kelas.dto';
 @Injectable()
 export class KelasService {
   constructor(private prisma: PrismaService) {}
@@ -20,6 +20,40 @@ export class KelasService {
       },
     });
     return result;
+  }
+
+  async newAnggota(kelasKode: string, payload: AnggotaKelasDto) {
+    return await this.prisma.mahasiswa.update({
+      where: {
+        nim: payload.nim,
+      },
+      data: {
+        kelas: {
+          connect: {
+            kode: kelasKode,
+          },
+        },
+      },
+    });
+  }
+
+  async findAnggota(kelasKode: string) {
+    return await this.prisma.mahasiswa.findMany({
+      where: {
+        kelasKode,
+      },
+    });
+  }
+
+  async deleteAnggota(payload: AnggotaKelasDto) {
+    return await this.prisma.mahasiswa.update({
+      where: {
+        nim: payload.nim,
+      },
+      data: {
+        kelas: null,
+      },
+    });
   }
 
   async all() {

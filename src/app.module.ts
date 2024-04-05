@@ -12,6 +12,8 @@ import { MatakuliahModule } from './matakuliah/matakuliah.module';
 import { PembelajaranModule } from './pembelajaran/pembelajaran.module';
 import { PertemuanModule } from './pertemuan/pertemuan.module';
 
+import { PresensiEventModule } from './pertemuan/event/event.module';
+
 @Module({
   imports: [
     MahasiswaModule,
@@ -24,6 +26,7 @@ import { PertemuanModule } from './pertemuan/pertemuan.module';
     AkunModule,
     PembelajaranModule,
     PertemuanModule,
+    PresensiEventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
