@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MahasiswaModule } from './mahasiswa/mahasiswa.module';
 import { DosenModule } from './dosen/dosen.module';
 import { ProdiModule } from './prodi/prodi.module';
@@ -28,7 +26,5 @@ import { PresensiEventModule } from './pertemuan/event/event.module';
     PertemuanModule,
     PresensiEventModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

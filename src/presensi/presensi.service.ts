@@ -47,4 +47,52 @@ export class PresensiService {
     });
     return result;
   }
+
+  async all(nim: string, pertemuanId: number) {
+    const result = await this.prisma.presensi.findMany({
+      where: {
+        mahasiswaNim: nim,
+        AND: {
+          pertemuanId,
+        },
+      },
+      orderBy: {
+        jameKe: 'asc',
+      },
+    });
+    const kehadiranPresentase = result.filter((item) => item.jenis === 'masuk');
+    return {
+      result,
+      presentaseKehadiran: (kehadiranPresentase.length / result.length) * 100,
+    };
+  }
+
+  async update(id: number, jenis: $Enums.JenisAbsensi) {
+    return await this.prisma.presensi.update({
+      where: {
+        id,
+      },
+      data: {
+        jenis,
+      },
+    });
+  }
+
+  async updateMassal(
+    nim: string,
+    pertemuanId: number,
+    jenis: $Enums.JenisAbsensi,
+  ) {
+    return await this.prisma.presensi.updateMany({
+      where: {
+        mahasiswaNim: nim,
+        AND: {
+          pertemuanId,
+        },
+      },
+      data: {
+        jenis,
+      },
+    });
+  }
 }

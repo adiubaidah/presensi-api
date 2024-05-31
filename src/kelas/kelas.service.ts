@@ -42,6 +42,9 @@ export class KelasService {
       where: {
         kelasKode,
       },
+      orderBy: {
+        nama: 'asc',
+      },
     });
   }
 
@@ -54,10 +57,6 @@ export class KelasService {
         kelas: null,
       },
     });
-  }
-
-  async all() {
-    return await this.prisma.kelas.findMany();
   }
 
   async allByProdi(prodiKode: string) {

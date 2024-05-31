@@ -32,22 +32,33 @@ export class AkunService {
   }
 
   async allAkun() {
-    const akun = await this.prisma.akun.findMany();
+    const akun = await this.prisma.akun.findMany({
+      where: {
+        role: {
+          in: ['dosen', 'mahasiswa'],
+        },
+      },
+    });
     return akun;
   }
 
-  async mahasiswa() {
-    return await this.prisma.akun.findMany({
-      where: {
-        role: 'mahasiswa',
-      },
-    });
-  }
-
-  async dosen() {
+  async dosen(relation: number) {
     return await this.prisma.akun.findMany({
       where: {
         role: 'dosen',
+        ...(relation && {
+          dosen: relation === 1 ? { isNot: null } : { is: null },
+        }),
+      },
+    });
+  }
+  async mahasiswa(relation: number) {
+    return await this.prisma.akun.findMany({
+      where: {
+        role: 'mahasiswa',
+        ...(relation && {
+          mahasiswa: relation === 1 ? { isNot: null } : { is: null },
+        }),
       },
     });
   }
@@ -58,6 +69,9 @@ export class AkunService {
     const existingAkun = await this.prisma.akun.findUnique({
       where: {
         username,
+        NOT: {
+          username,
+        },
       },
     });
     if (existingAkun) throw new ConflictException('username telah terpakai');
@@ -87,6 +101,21 @@ export class AkunService {
       },
     });
     return Akun;
+  }
+
+  async akunDetail(username: string) {
+    const akun = await this.prisma.akun.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        dosen: true,
+        mahasiswa: true,
+        username: true,
+        role: true,
+      },
+    });
+    return akun.role === 'dosen' ? akun.dosen : akun.mahasiswa;
   }
 
   async delete(username: string) {

@@ -33,6 +33,7 @@ export class MatakuliahController {
   @Get()
   async all(@Req() req: Request) {
     const user = req['user'];
+    console.log(user);
     if (user.role === RoleEnum.dosen) {
       return await this.matakuliahService.allByDosen(user.username);
     }

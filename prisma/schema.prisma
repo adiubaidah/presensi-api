@@ -123,7 +123,7 @@ model Presensi {
   id           Int           @id @default(autoincrement())
   jameKe       Int //urutan jam dari presensi
   pertemuanId  Int
-  pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id])
+  pertemuan    Pertemuan     @relation(fields: [pertemuanId], references: [id], onDelete: Cascade)
   mahasiswaNim String        @db.Char(10)
   mahasiswa    Mahasiswa     @relation(fields: [mahasiswaNim], references: [nim])
   jenis        JenisAbsensi?

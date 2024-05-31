@@ -28,9 +28,7 @@ export class MatakuliahService {
         matakuliah: true,
       },
     });
-
     const response = _.map(result, (item) => item.matakuliah);
-
     return response;
   }
 

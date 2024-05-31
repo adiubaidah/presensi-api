@@ -29,6 +29,25 @@ export class PembelajaranService {
       },
     });
   }
+
+  async currentSemester(nim: string, kelasKode: string) {
+    if (nim) {
+      return await this.prisma.$queryRaw`SELECT
+         MAX(pemb.semester) AS semester
+      FROM
+        public."Mahasiswa" as mhs
+        INNER JOIN public."Kelas" AS kelas ON mhs."kelasKode" = kelas.kode
+        INNER JOIN public."Pembelajaran" AS pemb ON pemb."kelasKode" = kelas.kode
+      WHERE mhs.nim = ${nim}`;
+    } else if (kelasKode) {
+      return await this.prisma.$queryRaw`SELECT
+        MAX(pemb.semester) AS semester
+      FROM public."Kelas" AS kelas ON mhs."kelasKode" = kelas.kode
+        INNER JOIN public."Pembelajaran" AS pemb ON pemb."kelasKode" = kelas.kode
+        WHERE kelas.kode = ${kelasKode}`;
+    }
+  }
+
   async findByKelas(kelasKode: string) {
     return await this.prisma.pembelajaran.findMany({
       where: {

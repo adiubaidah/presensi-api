@@ -30,7 +30,6 @@ export class PertemuanEvent implements OnModuleInit {
   @WebSocketServer()
   server: Server;
   intervals = new Map<number, NodeJS.Timeout>();
-  remainingTimes = new Map<number, number>();
   pertemuanUsers = new Map<number, PertemuanUser[]>();
   pertemuanPresensi = new Map<number, Record<string, boolean>>();
 
@@ -58,6 +57,8 @@ export class PertemuanEvent implements OnModuleInit {
     if (this.intervals.has(pertemuanPayload.id)) {
       //agar menerima informasi yang sama
       this.server.to(client.id).emit('countdown-start');
+    } else {
+      this.server.to(client.id).emit('countdown-end');
     }
     if (
       pertemuanPayload.user.role === 'dosen' &&
@@ -71,6 +72,7 @@ export class PertemuanEvent implements OnModuleInit {
       const pertemuan = this.pertemuanPresensi.get(pertemuanPayload.id);
       if (!!pertemuan) {
         const isPresence = pertemuan[pertemuanPayload.user.username];
+        console.log(isPresence);
         if (isPresence) {
           this.server.to(client.id).emit('is-presence', true);
         }
@@ -109,15 +111,15 @@ export class PertemuanEvent implements OnModuleInit {
           this.intervals.delete(pertemuan_id);
           this.server.to(`pertemuan:${pertemuan_id}`).emit('countdown-end');
           await this.pertemuanService.stopTimer(pertemuan_id);
-          const result = await insertPresence(
-            this.pertemuanPresensi.get(pertemuan_id),
-            pertemuan_id,
-            this.presensiService,
-          );
-          // const result = 1;
-          this.server
-            .to(`pertemuan:${pertemuan_id}`)
-            .emit(result === 1 ? 'presensi-saved' : 'presensi-fail');
+          // const result = await insertPresence(
+          //   this.pertemuanPresensi.get(pertemuan_id),
+          //   pertemuan_id,
+          //   this.presensiService,
+          // );
+          // // const result = 1;
+          // this.server
+          //   .to(`pertemuan:${pertemuan_id}`)
+          //   .emit(result === 1 ? 'presensi-saved' : 'presensi-fail');
           this.pertemuanPresensi.delete(pertemuan_id);
         } else {
           this.server
@@ -141,6 +143,7 @@ export class PertemuanEvent implements OnModuleInit {
       pertemuan_id,
       this.presensiService,
     );
+    this.pertemuanPresensi.delete(pertemuan_id);
     this.server
       .to(`pertemuan:${pertemuan_id}`)
       .emit(result === 1 ? 'presensi-saved' : 'presensi-fail');
@@ -149,19 +152,32 @@ export class PertemuanEvent implements OnModuleInit {
 
   @SubscribeMessage('presensi')
   async onPresensi(@MessageBody() body: PresensiEvent) {
-    const { pertemuan_id, nim } = body;
+    const { pertemuan_id, nim, is_dosen_do_presence, value } = body;
 
-    //cek terlebih dahulu apakah array atau tidak
-    if (Array.isArray(nim)) {
-      //berarti yang melakukan dosen
-      nim.forEach((n) => {
-        this.pertemuanPresensi.get(pertemuan_id)[n] = true;
-      });
+    const currentPresensi = this.pertemuanPresensi.get(pertemuan_id)!;
+
+    if (is_dosen_do_presence) {
+      if (typeof nim === 'object') {
+        // If nim is an object, update each key to the specified value.
+        Object.keys(nim).forEach((key) => {
+          currentPresensi[key] = value;
+        });
+      } else {
+        // If nim is not an object, simply update the specific nim with the value.
+        currentPresensi[nim] = value;
+      }
     } else {
-      this.pertemuanPresensi.get(pertemuan_id)[nim] = true;
-      this.server.to(`pertemuan:${pertemuan_id}`).emit('presensi-success', nim);
+      //mahasiswa
+      if (typeof nim !== 'object') {
+        // If nim is a single value, mark it as present.
+        currentPresensi[nim] = true;
+        this.server
+          .to(`pertemuan:${pertemuan_id}`)
+          .emit('presensi-success', nim);
+        this.server.to(`pertemuan:${pertemuan_id}`).emit('presensi-new', nim);
+      }
     }
-    this.server.to(`pertemuan:${pertemuan_id}`).emit('presensi-new', nim);
+    this.pertemuanPresensi.set(pertemuan_id, currentPresensi);
   }
 }
 
@@ -210,7 +226,9 @@ async function insertPresence(
 
 type PresensiEvent = {
   pertemuan_id: number;
-  nim: string | string[];
+  is_dosen_do_presence: boolean;
+  nim: string | Record<string, boolean>;
+  value: boolean;
 };
 
 type PertemuanUser = {

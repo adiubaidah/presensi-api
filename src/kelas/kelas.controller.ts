@@ -20,13 +20,6 @@ import { RoleGuard } from 'src/role/role.guard';
 export class KelasController {
   constructor(private kelasService: KelasService) {}
 
-  @Role([RoleEnum.admin])
-  @UseGuards(JwtGuard, RoleGuard)
-  @Get()
-  async all() {
-    return await this.kelasService.all();
-  }
-
   @Role([RoleEnum.admin, RoleEnum.dosen])
   @UseGuards(JwtGuard, RoleGuard)
   @Get()
